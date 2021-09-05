@@ -3,12 +3,15 @@ package com.simplilearn.lockme.authentication;
 import com.simplilearn.lockme.application.Application;
 import com.simplilearn.lockme.model.UserCredentials;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
 public class Authentication {
 
-    public static void lockerOptions(String inpUsername, Scanner keyboard,UserCredentials userCredentials) {
+    public static void lockerOptions(String inpUsername, Scanner keyboard,UserCredentials userCredentials, PrintWriter lockerOutput) {
         System.out.println("=================================");
         System.out.println("1 . FETCH ALL STORED CREDENTIALS ");
         System.out.println("2 . STORED CREDENTIALS ");
@@ -17,17 +20,17 @@ public class Authentication {
         int option = keyboard.nextInt();
         switch(option) {
             case 1 :
-                fetchCredentials(inpUsername,keyboard,userCredentials);
+                fetchCredentials(inpUsername,keyboard,userCredentials,lockerOutput);
                 break;
             case 2 :
-                storeCredentials(inpUsername,keyboard,userCredentials);
+                storeCredentials(inpUsername,keyboard,userCredentials,lockerOutput);
                 break;
             case 3 :
                 logout();
                 break;
             default :
                 System.out.println("Please select 1,2 Or 3");
-                lockerOptions(inpUsername,keyboard,userCredentials);
+                lockerOptions(inpUsername,keyboard,userCredentials,lockerOutput);
                 break;
         }
         Application.getLockerInput().close();
@@ -43,7 +46,7 @@ public class Authentication {
     }
 
     //fetch credentials
-    public static void fetchCredentials(String inpUsername,Scanner keyboard,UserCredentials userCredentials) {
+    public static void fetchCredentials(String inpUsername,Scanner keyboard,UserCredentials userCredentials, PrintWriter lockerOutput){
         System.out.println("==========================================");
         System.out.println("*										 *");
         System.out.println("*   WELCOME TO DIGITAL LOCKER 	 		 *");
@@ -51,20 +54,25 @@ public class Authentication {
         System.out.println("*										 *");
         System.out.println("==========================================");
         System.out.println(inpUsername);
-
-        while(Application.getLockerInput().hasNext()) {
+        try {
+            File lockerFile = new File("locker-file.txt");
+            Scanner lockerInput = new Scanner(lockerFile);
+            while(lockerInput.hasNext()) {
 //			System.out.println(lockerInput.hasNext());
-            if(Application.getLockerInput().next().equals(inpUsername)) {
-                System.out.println("Site Name: "+Application.getLockerInput().next());
-                System.out.println("User Name: "+Application.getLockerInput().next());
-                System.out.println("User Password: "+Application.getLockerInput().next());
+                if(lockerInput.next().equals(inpUsername)) {
+                    System.out.println("Site Name: "+lockerInput.next());
+                    System.out.println("User Name: "+lockerInput.next());
+                    System.out.println("User Password: "+lockerInput.next());
+                }
             }
+        }catch (IOException e) {
+            System.out.println("File Not Found !!");
         }
-        Application.welcomeScreen();
+        lockerOptions(inpUsername,keyboard,userCredentials,lockerOutput);
     }
 
     //store credentials
-    public static void storeCredentials(String loggedInUser, Scanner keyboard,UserCredentials userCredentials) {
+    public static void storeCredentials(String loggedInUser, Scanner keyboard,UserCredentials userCredentials, PrintWriter lockerOutput) {
         System.out.println("==========================================================");
         System.out.println("*													     *");
         System.out.println("* WELCOME TO DIGITAL LOCKER STORE YOUR CREDENTIALS HERE	 *");
@@ -85,12 +93,12 @@ public class Authentication {
         String password = keyboard.next();
         userCredentials.setPassword(password);
 
-        Application.getLockerOutput().println(userCredentials.getLoggedInUser());
-        Application.getLockerOutput().println(userCredentials.getSiteName());
-        Application.getLockerOutput().println(userCredentials.getUsername());
-        Application.getLockerOutput().println(userCredentials.getPassword());
-        Application.getLockerOutput().close();
+        lockerOutput.println(userCredentials.getLoggedInUser());
+        lockerOutput.println(userCredentials.getSiteName());
+        lockerOutput.println(userCredentials.getUsername());
+        lockerOutput.println(userCredentials.getPassword());
+        lockerOutput.close();
         System.out.println("YOUR CREDENTIALS ARE STORED AND SECURED!");
-        Application.welcomeScreen();
+        lockerOptions(loggedInUser,keyboard,userCredentials,lockerOutput);
     }
 }

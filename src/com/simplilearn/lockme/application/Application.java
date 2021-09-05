@@ -1,9 +1,6 @@
 package com.simplilearn.lockme.application;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.Scanner;
 
 import com.simplilearn.lockme.authentication.Login;
@@ -55,7 +52,6 @@ public class Application {
 
 
 	public static void main(String[] args) {
-		initApp();
 		welcomeScreen();
 	}
 
@@ -66,7 +62,7 @@ public class Application {
 		System.out.println("*   Your Personal Digital Locker	 	 *");
 		System.out.println("*										 *");
 		System.out.println("==========================================");
-
+		initApp();
 		signInOptions();
 	}
 	public static void signInOptions() {
@@ -78,7 +74,7 @@ public class Application {
 				Registration.registerUser(keyboard,users);
 				break;
 			case 2 :
-				Login.loginUser(keyboard,input,userCredentials);
+				Login.loginUser(keyboard,input,userCredentials,lockerOutput);
 				break;
 			default :
 				System.out.println("Please select 1 Or 2");
@@ -98,7 +94,7 @@ public class Application {
 			//read data from db file
 			input = new Scanner(dbFile);
 			
-			//red data from locker file
+			//read data from locker file
 			lockerInput = new Scanner(lockerFile);
 			
 			//read data from keyboard
@@ -110,8 +106,7 @@ public class Application {
 			
 			users = new Users();
 			userCredentials  = new UserCredentials();
-			
-			
+
 		} catch (IOException e) {
 			System.out.println("404 : File Not Found ");
 		}
